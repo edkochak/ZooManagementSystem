@@ -1,0 +1,295 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\usepackage{geometry}  % Added the missing geometry package
+\usepackage{hyperref}  % Adding hyperref for proper cross-references
+\usepackage{listings}  % For code listings
+\usepackage{xcolor}    % For colored text/elements
+
+\setmainlanguage{russian}
+
+% Использование системных шрифтов macOS
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Courier New}
+\newfontfamily\cyrillicfont[Script=Cyrillic]{Times New Roman}
+\newfontfamily\cyrillicfonttt[Script=Cyrillic]{Courier New} % Adding Cyrillic monospace font
+
+\geometry{a4paper, margin=1in}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{csharpstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language={[Sharp]C}
+}
+
+\title{Домашнее задание №2\\
+Закрепление концепции Domain-Driven Design\\
+и принципов проектирования Clean Architecture}
+\author{Студент}
+\date{Апрель 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Введение}
+
+Данный отчет описывает разработанную систему управления зоопарком с использованием принципов Domain-Driven Design (DDD) и Clean Architecture. Система разработана для автоматизации следующих бизнес-процессов: управление животными, вольерами и расписанием кормлений.
+
+Основное внимание уделено контролю правильного расселения животных по вольерам, чтобы предотвратить размещение травоядных в вольерах с хищниками.
+
+\section{Реализованная функциональность}
+
+В соответствии с требованиями заказчика была реализована следующая функциональность:
+
+\subsection{Управление животными}
+
+\begin{enumerate}
+    \item Добавление новых животных (реализовано в классе \texttt{AnimalController}, метод \texttt{Create})
+    \item Удаление животных (реализовано в классе \texttt{AnimalController}, метод \texttt{Delete})
+    \item Просмотр информации о животных (реализовано в классе \texttt{AnimalController}, методы \texttt{GetAll} и \texttt{GetById})
+    \item Изменение статуса здоровья (реализовано в доменной модели \texttt{Animal}, методы \texttt{Treat} и \texttt{MarkAsSick})
+\end{enumerate}
+
+\subsection{Управление вольерами}
+
+\begin{enumerate}
+    \item Добавление новых вольеров (реализовано в классе \texttt{EnclosureController}, метод \texttt{Create})
+    \item Удаление вольеров (реализовано в классе \texttt{EnclosureController}, метод \texttt{Delete})
+    \item Просмотр информации о вольерах (реализовано в классе \texttt{EnclosureController}, методы \texttt{GetAll} и \texttt{GetById})
+    \item Просмотр списка животных в вольере (реализовано в классе \texttt{EnclosureController}, метод \texttt{GetAnimalsInEnclosure})
+\end{enumerate}
+
+\subsection{Перемещение животных между вольерами}
+
+\begin{enumerate}
+    \item Перемещение животного в вольер (реализовано в классе \texttt{AnimalController}, метод \texttt{MoveToEnclosure})
+    \item Удаление животного из вольера (реализовано в классе \texttt{AnimalController}, метод \texttt{RemoveFromEnclosure})
+    \item Бизнес-логика проверки совместимости животных и вольеров (реализовано в классе \texttt{Enclosure}, метод \texttt{AddAnimal})
+\end{enumerate}
+
+\subsection{Управление расписанием кормлений}
+
+\begin{enumerate}
+    \item Создание новых кормлений (реализовано в классе \texttt{FeedingScheduleController}, метод \texttt{Create})
+    \item Просмотр всех запланированных кормлений (реализовано в классе \texttt{FeedingScheduleController}, метод \texttt{GetAll})
+    \item Просмотр кормлений по дате (реализовано в классе \texttt{FeedingScheduleController}, метод \texttt{GetByDate})
+    \item Просмотр кормлений для конкретного животного (реализовано в классе \texttt{FeedingScheduleController}, метод \texttt{GetByAnimalId})
+    \item Отметка о выполнении кормления (реализовано в классе \texttt{FeedingScheduleController}, метод \texttt{MarkAsCompleted})
+\end{enumerate}
+
+\subsection{Просмотр статистики зоопарка}
+
+\begin{enumerate}
+    \item Общее количество животных (реализовано в классе \texttt{ZooStatisticsController}, метод \texttt{GetAnimalCount})
+    \item Статистика по видам животных (реализовано в классе \texttt{ZooStatisticsController}, метод \texttt{GetSpeciesStatistics})
+    \item Статистика по состоянию здоровья животных (реализовано в классе \texttt{ZooStatisticsController}, метод \texttt{GetAnimalHealthStatistics})
+    \item Информация о вольерах (реализовано в классе \texttt{ZooStatisticsController}, методы \texttt{GetEnclosureCount}, \texttt{GetEnclosureTypeStatistics}, \texttt{GetEnclosureOccupancyRate})
+    \item Общее резюме зоопарка (реализовано в классе \texttt{ZooStatisticsController}, метод \texttt{GetZooSummary})
+\end{enumerate}
+
+\section{Применение Domain-Driven Design}
+
+В рамках проекта были применены следующие концепции Domain-Driven Design:
+
+\subsection{Использование Value Objects для примитивов}
+
+\begin{enumerate}
+    \item \texttt{FoodType} - созданный Value Object для представления типа пищи. Класс обеспечивает неизменяемость значения и корректное сравнение на равенство.
+    \item \texttt{EnclosureType} - Value Object для представления типа вольера (для хищников, травоядных, птиц, аквариум). Содержит предопределенные типы и обеспечивает неизменяемость.
+    \item \texttt{Gender} - перечисление, представляющее пол животного.
+\end{enumerate}
+
+Пример реализации Value Object:
+
+\begin{lstlisting}[style=csharpstyle]
+public class FoodType
+{
+    public string Name { get; private set; }
+    
+    private FoodType(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Food name cannot be empty", nameof(name));
+            
+        Name = name;
+    }
+    
+    public static FoodType Create(string name) => new FoodType(name);
+    
+    public override bool Equals(object obj)
+    {
+        if (obj is not FoodType other)
+            return false;
+            
+        return string.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase);
+    }
+    
+    public override int GetHashCode()
+    {
+        return Name.ToLowerInvariant().GetHashCode();
+    }
+}
+\end{lstlisting}
+
+\subsection{Богатая доменная модель с инкапсуляцией бизнес-правил}
+
+\begin{enumerate}
+    \item \texttt{Animal} - инкапсулирует бизнес-правила для животных, включая логику проверки корректности создания (корректные имя, вид, дата рождения) и изменения состояния (здоровье, перемещение).
+    \item \texttt{Enclosure} - содержит бизнес-правила для размещения животных, проверяя совместимость хищников и травоядных, а также контроль максимальной вместимости.
+    \item \texttt{FeedingSchedule} - инкапсулирует логику планирования и выполнения кормлений.
+\end{enumerate}
+
+Пример инкапсуляции бизнес-правил в доменной модели:
+
+\begin{lstlisting}[style=csharpstyle]
+public bool AddAnimal(Animal animal)
+{
+    if (animal == null)
+        throw new ArgumentNullException(nameof(animal));
+        
+    if (!CanAddAnimal())
+        return false;
+        
+    // Domain logic to determine if the animal can be placed in this enclosure
+    // For example, don't put predators with herbivores
+    if (Type == EnclosureType.Predator && !IsPredator(animal.Species))
+        return false;
+        
+    if (Type == EnclosureType.Herbivore && IsPredator(animal.Species))
+        return false;
+        
+    _animals.Add(animal);
+    animal.MoveToEnclosure(Id);
+    
+    return true;
+}
+\end{lstlisting}
+
+\subsection{Доменные события}
+
+Реализовано два основных доменных события для обеспечения интеграции между различными частями системы:
+
+\begin{enumerate}
+    \item \texttt{AnimalMovedEvent} - возникает при перемещении животного между вольерами.
+    \item \texttt{FeedingTimeEvent} - возникает при наступлении времени кормления.
+\end{enumerate}
+
+Реализованы базовые классы для работы с событиями:
+
+\begin{enumerate}
+    \item \texttt{DomainEvent} - базовый класс для всех доменных событий.
+    \item \texttt{DomainEvents} - статический класс для управления событиями.
+    \item \texttt{IDomainEventHandler} - интерфейс для обработчиков событий.
+\end{enumerate}
+
+\section{Реализация Clean Architecture}
+
+Проект структурирован согласно принципам Clean Architecture:
+
+\subsection{Domain Layer (ядро)}
+
+Содержит основные сущности, Value Objects и бизнес-правила. Этот слой полностью независим от внешних слоев и не содержит никаких зависимостей от внешних фреймворков или библиотек.
+
+\begin{enumerate}
+    \item \texttt{Domain/Entities} - содержит основные сущности (Animal, Enclosure, FeedingSchedule)
+    \item \texttt{Domain/ValueObjects} - содержит Value Objects (FoodType, EnclosureType, Gender)
+    \item \texttt{Domain/Events} - содержит доменные события и их обработчики
+    \item \texttt{Domain/Interfaces} - содержит интерфейсы репозиториев, используемые для взаимодействия с хранилищами данных
+\end{enumerate}
+
+\subsection{Application Layer}
+
+Содержит бизнес-логику приложения, использует сущности из доменного слоя и определяет интерфейсы для внешних сервисов:
+
+\begin{enumerate}
+    \item \texttt{Application/Services} - содержит сервисы, реализующие бизнес-логику (AnimalTransferService, FeedingOrganizationService, ZooStatisticsService)
+    \item \texttt{Application/Interfaces} - содержит интерфейсы сервисов
+    \item \texttt{Application/DTOs} - содержит объекты для передачи данных между слоями
+\end{enumerate}
+
+Этот слой зависит только от Domain Layer и не имеет зависимостей от внешних фреймворков или библиотек.
+
+\subsection{Infrastructure Layer}
+
+Реализует интерфейсы, определенные в доменном и прикладном слоях, для взаимодействия с внешними системами и ресурсами:
+
+\begin{enumerate}
+    \item \texttt{Infrastructure/Data} - содержит реализацию хранилища данных (InMemoryContext)
+    \item \texttt{Infrastructure/Repositories} - содержит реализацию репозиториев
+\end{enumerate}
+
+\subsection{Presentation Layer}
+
+Содержит компоненты пользовательского интерфейса и API:
+
+\begin{enumerate}
+    \item \texttt{Presentation/Controllers} - содержит веб-контроллеры для обработки HTTP-запросов
+\end{enumerate}
+
+\section{Принципы Clean Architecture в проекте}
+
+\subsection{Зависимости направлены только внутрь}
+
+Внутренние слои не зависят от внешних:
+\begin{enumerate}
+    \item Domain Layer не имеет никаких зависимостей от других слоев.
+    \item Application Layer зависит только от Domain Layer.
+    \item Infrastructure Layer зависит от Domain и Application Layers.
+    \item Presentation Layer зависит от Domain, Application, и Infrastructure Layers.
+\end{enumerate}
+
+\subsection{Зависимости между слоями через интерфейсы}
+
+Все взаимодействия между слоями осуществляются через интерфейсы:
+
+\begin{enumerate}
+    \item В Domain Layer определены интерфейсы репозиториев (\texttt{IAnimalRepository}, \texttt{IEnclosureRepository}, \texttt{IFeedingScheduleRepository}).
+    \item В Application Layer определены интерфейсы сервисов (\texttt{IAnimalService}, \texttt{IEnclosureService}, \texttt{IFeedingScheduleService}).
+    \item Infrastructure Layer реализует интерфейсы из Domain Layer.
+    \item Presentation Layer использует интерфейсы сервисов из Application Layer.
+\end{enumerate}
+
+\subsection{Бизнес-логика изолирована в Domain и Application слоях}
+
+\begin{enumerate}
+    \item В Domain Layer содержатся основные бизнес-правила, связанные с сущностями (проверка здоровья животных, совместимость животных и вольеров).
+    \item В Application Layer содержится бизнес-логика приложения (перемещение животных между вольерами, организация кормления, сбор статистики).
+    \item Infrastructure Layer отвечает только за доступ к данным.
+    \item Presentation Layer отвечает только за взаимодействие с пользователем.
+\end{enumerate}
+
+\section{Заключение}
+
+Система управления зоопарком полностью реализована с использованием принципов Domain-Driven Design и Clean Architecture. Применение этих подходов обеспечивает:
+
+\begin{enumerate}
+    \item Чистую и понятную структуру проекта
+    \item Изоляцию бизнес-логики от деталей реализации инфраструктуры и представления
+    \item Легкое тестирование компонентов
+    \item Гибкость и расширяемость системы
+\end{enumerate}
+
+Все требуемые бизнес-процессы автоматизированы, и система позволяет эффективно управлять животными, вольерами и кормлениями, предотвращая размещение несовместимых животных в одном вольере.
+
+\end{document}
